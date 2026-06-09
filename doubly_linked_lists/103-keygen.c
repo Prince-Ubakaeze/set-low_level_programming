@@ -1,65 +1,68 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
- * validate_key - Generates a verifiable hash based on a given username
- * @username: The input username string
- * @provided_key: The user-supplied key to compare against
+ * main - Generates a valid key based on a username for crackme5.
+ * @argc: Argument count.
+ * @argv: Argument vector.
  *
- * Return: 1 if the key matches the calculated criteria, 0 otherwise
+ * Return: Always 0.
  */
-int validate_key(const char *username, const char *provided_key)
+int main(int argc, char *argv[])
 {
-	size_t len = strlen(username);
-	size_t i;
-	char expected_key[256];
+	char *username;
+	char key[7];
+	int len, i, sum;
+	char *lookup = "A-Za-z0-9-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-	if (len == 0 || len > 100)
-		return (0);
-
-	/* Simple deterministic transformation mapping for demonstration */
-	for (i = 0; i < len && i < 255; i++)
-	{
-		/* Example logic: static XOR mask altering input characters */
-		expected_key[i] = username[i] ^ 0x5A;
-	}
-	expected_key[i] = '\0';
-
-	/* Compare the generated criterion with the user's supplied argument */
-	if (strcmp(expected_key, provided_key) == 0)
+	if (argc != 2)
 		return (1);
 
-	return (0);
-}
+	username = argv[1];
+	len = strlen(username);
 
-/**
- * main - Secure command line interface wrapper
- * @argc: Argument count
- * @argv: Argument vector containing program name, username, and key
- *
- * Return: Always 0 (Success) or 1 (Failure/Invalid arguments)
- */
-int main(int argc, char **argv)
-{
-	/* 
-	 * CRITICAL: Check that all parameters exist before scanning memory. 
-	 * Accessing argv[1] or argv[2] when argc < 3 causes a Segmentation Fault.
-	 */
-	if (argc < 3)
-	{
-		fprintf(stderr, "Usage: %s <username> <key>\n", argv[0]);
-		return (1);
-	}
+	/* Character 1 */
+	key[0] = lookup[(len ^ 59) & 63];
 
-	if (validate_key(argv[1], argv[2]))
+	/* Character 2 */
+	sum = 0;
+	for (i = 0; i < len; i++)
+		sum += username[i];
+	key[1] = lookup[(sum ^ 79) & 63];
+
+	/* Character 3 */
+	sum = 1;
+	for (i = 0; i < len; i++)
+		sum *= username[i];
+	key[2] = lookup[(sum ^ 85) & 63];
+
+	/* Character 4 */
+	sum = username[0];
+	for (i = 0; i < len; i++)
 	{
-		printf("Validation Succeeded!\n");
+		if (username[i] > sum)
+			sum = username[i];
 	}
-	else
-	{
-		printf("Validation Failed.\n");
-	}
+	srand(sum ^ 14);
+	key[3] = lookup[rand() & 63];
+
+	/* Character 5 */
+	sum = 0;
+	for (i = 0; i < len; i++)
+		sum += (username[i] * username[i]);
+	key[4] = lookup[(sum ^ 239) & 63];
+
+	/* Character 6 */
+	sum = 0;
+	for (i = 0; i < username[0]; i++)
+		sum = rand();
+	key[5] = lookup[(sum ^ 229) & 63];
+
+	key[6] = '\0';
+
+	/* Print the final generated 6-character key string */
+	printf("%s", key);
 
 	return (0);
 }
