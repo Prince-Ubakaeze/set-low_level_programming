@@ -1,10 +1,10 @@
 #include "hash_tables.h"
 
 /**
- * hash_djb2 - Implementation of the djb2 string hashing algorithm.
- * @str: The input string character sequence to hash.
+ * hash_djb2 - implementation of the djb2 algorithm
+ * @str: string used to generate hash value
  *
- * Return: The calculated hash numeric value representation.
+ * Return: hash value
  */
 unsigned long int hash_djb2(const unsigned char *str)
 {
