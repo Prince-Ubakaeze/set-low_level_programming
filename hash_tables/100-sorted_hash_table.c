@@ -1,8 +1,12 @@
+#define _GNU_SOURCE
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "hash_tables.h"
 
 /**
  * shash_table_create - Creates a sorted hash table wrapper structure.
- * @size: The footprint dimension size of the internal pointer bucket array.
+ * @size: The dimension size of the internal pointer bucket array.
  *
  * Return: A pointer to the newly allocated sorted table, or NULL upon failure.
  */
